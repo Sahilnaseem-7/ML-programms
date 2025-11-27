@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stylish Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.3s ease;
+        }
+        
+        body.light {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        
+        .calculator {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            width: 320px;
+            transition: all 0.3s ease;
+        }
+        
+        .calculator.light {
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .title {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .title.light {
+            color: #333;
+            text-shadow: none;
+        }
+        
+        .theme-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .theme-toggle.light {
+            background: rgba(0, 0, 0, 0.1);
+            color: #333;
+        }
+        
+        .theme-toggle:hover {
+            transform: scale(1.05);
+        }
+        
+        .display {
+            background: rgba(0, 0, 0, 0.2);
+            color: white;
+            font-size: 2.5em;
+            text-align: right;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            word-break: break-all;
+            transition: background 0.3s ease;
+        }
+        
+        .display.light {
+            background: rgba(0, 0, 0, 0.05);
+            color: #333;
+        }
+        
+        .error {
+            color: #ff6b6b !important;
+        }
+        
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+        
+        button {
+            height: 60px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.5em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .digit, .decimal {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        
+        .digit.light, .decimal.light {
+            background: rgba(0, 0, 0, 0.05);
+            color: #333;
+        }
+        
+        .operation {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            color: white;
+        }
+        
+        .operation.light {
+            background: linear-gradient(45deg, #ff9ff3, #f368e0);
+        }
+        
+        .clear {
+            background: linear-gradient(45deg, #feca57, #ff9ff3);
+            color: #333;
+            grid-column: span 2;
+        }
+        
+        .clear.light {
+            background: linear-gradient(45deg, #a8e6cf, #88d8a3);
+        }
+        
+        .equals {
+            background: linear-gradient(45deg, #48dbfb, #0abde3);
+            color: white;
+            grid-column: span 2;
+        }
+        
+        .equals.light {
+            background: linear-gradient(45deg, #54a0ff, #2e86de);
+        }
+        
+        @media (max-width: 400px) {
+            .calculator {
+                width: 90%;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator" id="calculator">
+        <div class="header">
+            <h1 class="title" id="title">Calculator</h1>
+            <button class="theme-toggle" id="themeToggle">🌙</button>
+        </div>
+        <div class="display" id="display">0</div>
+        <div class="buttons">
+            <button class="clear" onclick="clearDisplay()">C</button>
+            <button class="operation" onclick="performOperation('÷')">÷</button>
+            <button class="digit" onclick="appendDigit('7')">7</button>
+            <button class="digit" onclick="appendDigit('8')">8</button>
+            <button class="digit" onclick="appendDigit('9')">9</button>
+            <button class="operation" onclick="performOperation('×')">×</button>
+            <button class="digit" onclick="appendDigit('4')">4</button>
+            <button class="digit" onclick="appendDigit('5')">5</button>
+            <button class="digit" onclick="appendDigit('6')">6</button>
+            <button class="operation" onclick="performOperation('-')">-</button>
+            <button class="digit" onclick="appendDigit('1')">1</button>
+            <button class="digit" onclick="appendDigit('2')">2</button>
+            <button class="digit" onclick="appendDigit('3')">3</button>
+            <button class="operation" onclick="performOperation('+')">+</button>
+            <button class="digit decimal" onclick="appendDecimal()">.</button>
+            <button class="digit" onclick="appendDigit('0')">0</button>
+            <button class="equals" onclick="calculateResult()">=</button>
+        </div>
+    </div>
+
+    <script>
+        let displayValue = '0';
+        let previousValue = null;
+        let operation = null;
+        let waitingForOperand = false;
+        const display = document.getElementById('display');
+        const calculator = document.getElementById('calculator');
+        const title = document.getElementById('title');
+        const themeToggle = document.getElementById('themeToggle');
+
+        // Operation symbol to API string mapping
+        const opMap = {
+            '+': 'add',
+            '-': 'subtract',
+            '×': 'multiply',
+            '÷': 'divide'
+        };
+
+        // Theme toggle
+        let isLight = false;
+        themeToggle.addEventListener('click', () => {
+            isLight = !isLight;
+            document.body.classList.toggle('light');
+            calculator.classList.toggle('light');
+            title.classList.toggle('light');
+            themeToggle.classList.toggle('light');
+            themeToggle.textContent = isLight ? '☀️' : '🌙';
+            document.querySelectorAll('.digit, .decimal').forEach(btn => btn.classList.toggle('light'));
+            document.querySelectorAll('.operation').forEach(btn => btn.classList.toggle('light'));
+            document.querySelector('.clear').classList.toggle('light');
+            document.querySelector('.equals').classList.toggle('light');
+            display.classList.toggle('light');
+        });
+
+        function updateDisplay() {
+            display.textContent = displayValue;
+            display.classList.toggle('error', displayValue.includes('Error') || displayValue.includes('Invalid'));
+        }
+
+        function appendDigit(digit) {
+            if (waitingForOperand) {
+                displayValue = digit;
+                waitingForOperand = false;
+            } else {
+                displayValue = displayValue === '0' || displayValue.includes('Error') ? digit : displayValue + digit;
+            }
+            updateDisplay();
+        }
+
+        function appendDecimal() {
+            if (waitingForOperand) {
+                displayValue = '0.';
+                waitingForOperand = false;
+            } else if (displayValue === '0' || displayValue.includes('Error')) {
+                displayValue = '0.';
+            } else if (!displayValue.includes('.')) {
+                displayValue += '.';
+            }
+            updateDisplay();
+        }
+
+        function clearDisplay() {
+            displayValue = '0';
+            previousValue = null;
+            operation = null;
+            waitingForOperand = false;
+            updateDisplay();
+        }
+
+        // Internal compute function (calls API, returns result or error)
+        async function compute(num1, num2, opSymbol) {
+            const apiOp = opMap[opSymbol];
+            if (!apiOp) return { error: 'Invalid operation' };
+
+            try {
+                const response = await fetch('/api/calculate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        num1: num1,
+                        num2: num2,
+                        operation: apiOp
+                    })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    return { result: data.result };
+                } else {
+                    return { error: data.error };
+                }
+            } catch (error) {
+                console.error('API Error:', error);
+                return { error: 'Network error - check if server is running' };
+            }
+        }
+
+        async function performOperation(nextOp) {
+            const inputValue = parseFloat(displayValue.replace(/Error|Invalid/g, '0'));  // Fallback for errors
+
+            if (previousValue === null || operation === null) {
+                // First operation
+                previousValue = inputValue;
+            } else {
+                // Chain: Compute previous operation first
+                const computeResult = await compute(previousValue, inputValue, operation);
+                if (computeResult.error) {
+                    displayValue = computeResult.error;
+                    updateDisplay();
+                    return;
+                }
+                previousValue = computeResult.result;
+                displayValue = previousValue.toString();
+                updateDisplay();
+            }
+
+            operation = nextOp;
+            waitingForOperand = true;
+        }
+
+        async function calculateResult() {
+            if (operation && previousValue !== null && !waitingForOperand) {
+                const inputValue = parseFloat(displayValue);
+                const computeResult = await compute(previousValue, inputValue, operation);
+                if (computeResult.error) {
+                    displayValue = computeResult.error;
+                } else {
+                    displayValue = computeResult.result.toString();
+                    previousValue = null;  // Reset after final =
+                }
+                operation = null;
+                waitingForOperand = true;
+                updateDisplay();
+            } else if (waitingForOperand) {
+                // If just an operation pending, do nothing (or could repeat last op, but keep simple)
+            }
+        }
+
+        updateDisplay();
+    </script>
+</body>
+</html>
